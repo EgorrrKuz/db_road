@@ -1,4 +1,5 @@
 # Микросервис db_road.
+[![BCH compliance](https://bettercodehub.com/edge/badge/EgorrrKuz/db_road?branch=master)](https://bettercodehub.com/)
 
 Загрузка данных с биржи на сервер.
 Подключается к [REST API](https://github.com/EgorrrKuz/tradeBot/tree/master/AIServer/REST_API).
