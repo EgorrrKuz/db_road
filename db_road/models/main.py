@@ -1,4 +1,6 @@
 import json
+import aiohttp
+import logging
 
 
 class Main:
@@ -84,6 +86,7 @@ class Main:
         :param data: Загружаемые данные
         """
 
+        url = self.dataset_server.get(name)
         coincidence = False  # Совпадение
 
         # Сравнение с серверными данными
@@ -97,8 +100,11 @@ class Main:
 
         # Если совпадение не найдено: POST на сервер
         if coincidence is False:
-            async with session.post(url=self.dataset_server[name], data=json.dumps(data)) as resp:
-                print(resp.status)
+            try:
+                async with session.post(url=url, data=json.dumps(data)) as resp:
+                    logging.debug("POST to url, status {}".format(url, resp.status))
+            except aiohttp.ClientConnectorError:
+                logging.error("Cannot connect to host {}".format(url))
 
     async def download(self, session, name):
         """
@@ -109,6 +115,13 @@ class Main:
         :return: Данные с сервера (JSON)
         """
 
+        url = self.dataset_server.get(name)
+
         # GET с сервера
-        async with session.get(self.dataset_server.get(name)) as resp:
-            return await resp.json()
+        try:
+            async with session.get(url) as resp:
+                logging.debug("GET from {}, status {}".format(url, resp.status))
+
+                return await resp.json()
+        except aiohttp.ClientConnectorError:
+            logging.error("Cannot connect to host {}".format(url))
