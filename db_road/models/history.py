@@ -10,7 +10,7 @@ class History(REST):
         self.name: str = "securities_moex"  # Название таблицы
 
     @staticmethod
-    def conversion(security, data):
+    def conversion(security: dict, data: dict):
         # Объединение массивов (столбцов и данных) в словарь
         new_data: dict = dict(zip(security.get("history").get("columns"), data))
 
@@ -40,7 +40,7 @@ class History(REST):
         else:
             return
 
-    async def start(self, session):
+    async def start(self, session: aiohttp):
         while True:
             boards: dict = await self.get(session, "boards")           # Данные с сервера ("boards")
             server_data: dict = await self.get(session, self.name)     # Целевые данные с сервера для проверки

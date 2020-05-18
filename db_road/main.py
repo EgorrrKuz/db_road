@@ -24,7 +24,7 @@ class Main:
         return 'http://iss.moex.com/iss/engines.json'
 
     @staticmethod
-    def get_markets(engine):
+    def get_markets(engine: str):
         """
         Получить dataset markets по engine
         :param engine: Название engine (string)
@@ -34,7 +34,7 @@ class Main:
         return 'http://iss.moex.com/iss/engines/{}/markets.json'.format(engine)
 
     @staticmethod
-    def get_boards(engine, market):
+    def get_boards(engine: str, market: str):
         """
         Получить dataset markets по engine-market
         :param engine: Название engine (string)
@@ -45,7 +45,7 @@ class Main:
         return 'http://iss.moex.com/iss/engines/{}/markets/{}/boards.json'.format(engine, market)
 
     @staticmethod
-    def get_securities(engine, market, board):
+    def get_securities(engine: str, market: str, board: str):
         """
         Получить dataset securities по engine-market-board
         :param engine: Название engine (string)
@@ -57,7 +57,7 @@ class Main:
         return 'http://iss.moex.com/iss/engines/{}/markets/{}/boards/{}/securities.json'.format(engine, market, board)
 
     @staticmethod
-    def get_history(engine, market, board, date):
+    def get_history(engine: str, market: str, board: str, date: str):
         """
 
         :param engine: Название engine (string)

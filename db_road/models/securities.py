@@ -1,3 +1,4 @@
+import aiohttp
 from db_road.rest import REST
 
 
@@ -6,7 +7,7 @@ class Securities(REST):
         super().__init__()
         self.name: str = "securities"  # Название таблицы
 
-    def conversion(self, sub_source, source, data):
+    def conversion(self, sub_source: dict, source: dict, data: dict):
         # Объединение массивов (столбцов и данных) в словарь
         new_data: dict = dict(zip(source.get(self.name).get("columns"), data))
 
@@ -25,7 +26,7 @@ class Securities(REST):
 
         return new_new_data
 
-    async def start(self, session):
+    async def start(self, session: aiohttp):
         while True:
             sub_sources: dict = await self.get(session, "boards")  # Данные с сервера ("boards")
             server_data: dict = await self.get(session, self.name)  # Целевые данные с сервера для проверки

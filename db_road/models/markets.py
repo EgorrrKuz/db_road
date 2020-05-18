@@ -1,3 +1,4 @@
+import aiohttp
 from db_road.rest import REST
 
 
@@ -6,7 +7,7 @@ class Markets(REST):
         super().__init__()
         self.name: str = "markets"
 
-    def conversion(self, sub_source, source, data):
+    def conversion(self, sub_source: dict, source: dict, data: dict):
         # Объединение массивов (столбцов и данных) в словарь
         new_data: dict = dict(zip(source.get(self.name).get("columns"), data))
 
@@ -18,7 +19,7 @@ class Markets(REST):
 
         return new_data
 
-    async def start(self, session):
+    async def start(self, session: aiohttp):
         while True:
             sub_sources: dict = await self.get(session, "engines")  # Данные с сервера ("engines")
             server_data: dict = await self.get(session, self.name)  # Целевые данные с сервера для проверки
