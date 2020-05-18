@@ -8,7 +8,7 @@
 
 ### Настрока подключения
 
-В файле [`models/main`](https://github.com/EgorrrKuz/tradeBot/blob/master/AIServer/db_road/models/main.py) настраиваем подключение:
+В файле [`main.py`](https://github.com/EgorrrKuz/tradeBot/blob/master/AIServer/db_road/main.py) настраиваем подключение:
 
 ```angular2
 server_url = "rest" URL для подключения к REST API
@@ -17,7 +17,7 @@ server_port = "8080" Потр на котором работает REST API
 
 ### Работа с биржей
 Елси изменятся адреса для загрузки данных  с биржи: изменить их в своих методах в 
-[`models/main`](https://github.com/EgorrrKuz/tradeBot/blob/master/AIServer/db_road/models/main.py):
+[`main.py`](https://github.com/EgorrrKuz/db_road/tree/master/db_road/main.py):
 
 ```angular2
 def get_engines():

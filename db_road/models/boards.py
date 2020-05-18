@@ -1,31 +1,33 @@
-from db_road.models.main import Main
+from db_road.main import Main
 import aiohttp
 import logging
 
 
 class Boards(Main):
     def __init__(self):
-        self.name = "boards"  # Название таблицы
+        super().__init__()
+        self.name: str = "boards"  # Название таблицы
 
     async def start(self, session):
         while True:
-            markets = await self.download(session, "markets")  # Данные с сервера ("markets")
-            server_data = await self.download(session, self.name)  # Целевые данные с сервера для проверки
+            markets: dict = await self.download(session, "markets")         # Данные с сервера ("markets")
+            server_data: dict = await self.download(session, self.name)     # Целевые данные с сервера для проверки
 
             if markets is not None:
                 # Загрузка board по каждому market
                 for market in markets.get("markets"):
-                    url = self.get_boards(market.get("engine_name"), market.get("name"))
+                    # URL откуда парсим данные
+                    url: str = self.get_boards(market.get("engine_name"), market.get("name"))
 
                     try:
                         async with session.get(url) as resp:
                             logging.debug("GET from {}, status {}".format(url, resp.status))
 
-                            boards = await resp.json()  # Данные с биржи
+                            boards: dict = await resp.json()  # Данные с биржи
 
                             for data in boards.get(self.name).get("data"):
                                 # Объединение массивов (столбцов и данных) в словарь
-                                new_data = dict(zip(boards.get(self.name).get("columns"), data))
+                                new_data: dict = dict(zip(boards.get(self.name).get("columns"), data))
 
                                 # Выбор только торгвых(is_traded) площадок (boards)
                                 if new_data.get("is_traded") == 1:

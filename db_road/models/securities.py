@@ -1,34 +1,39 @@
-from db_road.models.main import Main
+from db_road.main import Main
 import aiohttp
 import logging
 
 
 class Securities(Main):
     def __init__(self):
-        self.name = "securities"  # Название таблицы
+        super().__init__()
+        self.name: str = "securities"  # Название таблицы
 
     async def start(self, session):
         while True:
-            boards = await self.download(session, "boards")  # Данные с сервера ("boards")
-            server_data = await self.download(session, self.name)  # Целевые данные с сервера для проверки
+            boards: dict = await self.download(session, "boards")  # Данные с сервера ("boards")
+            server_data: dict = await self.download(session, self.name)  # Целевые данные с сервера для проверки
 
             # Загрузка securities по каждому board
             if boards is not None:
                 for board in boards.get("boards"):
-                    url = self.get_securities(board.get("engine_name"), board.get("market_name"), board.get("board_id"))
+                    # URL откуда парсим данные
+                    url: str = self.get_securities(
+                        board.get("engine_name"),
+                        board.get("market_name"),
+                        board.get("board_id"))
 
                     try:
                         async with session.get(url) as resp:
                             logging.debug("GET from {}, status {}".format(url, resp.status))
 
-                            securities = await resp.json()  # Данные с биржи
+                            securities: dict = await resp.json()  # Данные с биржи
 
                             for data in securities.get(self.name).get("data"):
                                 # Объединение массивов (столбцов и данных) в словарь
-                                new_data = dict(zip(securities.get(self.name).get("columns"), data))
+                                new_data: dict = dict(zip(securities.get(self.name).get("columns"), data))
 
                                 # Проще создать новый словарь, чем изменить исходный
-                                new_new_data = {}
+                                new_new_data: dict = {}
 
                                 # Переименование ключей
                                 if new_data.get("SECID") is not None:

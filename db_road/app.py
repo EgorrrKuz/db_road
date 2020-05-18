@@ -14,11 +14,11 @@ class App:
         Инициализация всех экземпляров класса
         """
 
-        self.boards = Boards()
-        self.engines = Engines()
-        self.history = History()
-        self.markets = Markets()
-        self.securities = Securities()
+        self.boards: Boards = Boards()
+        self.engines: Engines = Engines()
+        self.history: History = History()
+        self.markets: Markets = Markets()
+        self.securities: Securities = Securities()
 
     async def main(self):
         """
@@ -27,11 +27,11 @@ class App:
 
         async with aiohttp.ClientSession() as session:
             # Разделяем задачи на потоки
-            engines_t = asyncio.create_task(self.engines.start(session))
-            markets_t = asyncio.create_task(self.markets.start(session))
-            boards_t = asyncio.create_task(self.boards.start(session))
-            securities_t = asyncio.create_task(self.securities.start(session))
-            history_t = asyncio.create_task(self.history.start(session))
+            engines_t: asyncio = asyncio.create_task(self.engines.start(session))
+            markets_t: asyncio = asyncio.create_task(self.markets.start(session))
+            boards_t: asyncio = asyncio.create_task(self.boards.start(session))
+            securities_t: asyncio = asyncio.create_task(self.securities.start(session))
+            history_t: asyncio = asyncio.create_task(self.history.start(session))
 
             # Запуск задач
             await engines_t
@@ -44,5 +44,5 @@ class App:
 if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG)
 
-    app = App()
+    app: App = App()
     asyncio.run(app.main())

@@ -4,18 +4,19 @@ import logging
 
 
 class Main:
-    server_url = 'localhost'    # Для запуска на локальном сервере
-    # server_url = 'rest'       # Для запуска в контейнере Docker
-    server_port = '8080'        # Порт на котором работает REST API
+    def __init__(self):
+        self.server_url: str = 'localhost'  # Для запуска на локальном сервере
+        # server_url: str = 'rest'       # Для запуска в контейнере Docker
+        self.server_port: str = '8080'  # Порт на котором работает REST API
 
-    # Ссылки для парсинга данных с сервера
-    dataset_server = {
-        'engines': 'http://' + server_url + ':' + server_port + '/engines',
-        'markets': 'http://' + server_url + ':' + server_port + '/markets',
-        'boards': 'http://' + server_url + ':' + server_port + '/boards',
-        'securities': 'http://' + server_url + ':' + server_port + '/securities',
-        'securities_moex': 'http://' + server_url + ':' + server_port + '/securities_moex'
-    }
+        # Ссылки для парсинга данных с сервера
+        self.dataset_server: dict = {
+            'engines': 'http://' + self.server_url + ':' + self.server_port + '/engines',
+            'markets': 'http://' + self.server_url + ':' + self.server_port + '/markets',
+            'boards': 'http://' + self.server_url + ':' + self.server_port + '/boards',
+            'securities': 'http://' + self.server_url + ':' + self.server_port + '/securities',
+            'securities_moex': 'http://' + self.server_url + ':' + self.server_port + '/securities_moex'
+        }
 
     # Методы для получения данных с биржи
     @staticmethod
@@ -86,8 +87,8 @@ class Main:
         :param data: Загружаемые данные
         """
 
-        url = self.dataset_server.get(name)
-        coincidence = False  # Совпадение
+        url: str = self.dataset_server.get(name)    # URL куда загружаем данные
+        coincidence: bool = False                   # Совпадение
 
         # Сравнение с серверными данными
         if len(server_data[name]) > 0:
@@ -95,14 +96,14 @@ class Main:
                 if _data.get('id') is not None:
                     _data.pop('id')
                 if data == _data:
-                    coincidence = True
+                    coincidence: bool = True
                     break
 
         # Если совпадение не найдено: POST на сервер
         if coincidence is False:
             try:
                 async with session.post(url=url, data=json.dumps(data)) as resp:
-                    logging.debug("POST to url, status {}".format(url, resp.status))
+                    logging.debug("POST to {}, status {}".format(url, resp.status))
             except aiohttp.ClientConnectorError:
                 logging.error("Cannot connect to host {}".format(url))
 
@@ -115,7 +116,7 @@ class Main:
         :return: Данные с сервера (JSON)
         """
 
-        url = self.dataset_server.get(name)
+        url: str = self.dataset_server.get(name)  # URL откуда парсим данные
 
         # GET с сервера
         try:

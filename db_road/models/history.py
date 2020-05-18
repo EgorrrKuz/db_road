@@ -1,26 +1,29 @@
 import datetime
-from db_road.models.main import Main
+from db_road.main import Main
 import aiohttp
 import logging
 
 
 class History(Main):
     def __init__(self):
-        self.name = "securities_moex"  # Название таблицы
+        super().__init__()
+        self.name: str = "securities_moex"  # Название таблицы
 
     async def start(self, session):
         while True:
-            boards = await self.download(session, "boards")  # Данные с сервера ("boards")
-            server_data = await self.download(session, self.name)  # Целевые данные с сервера для проверки
+            boards: dict = await self.download(session, "boards")           # Данные с сервера ("boards")
+            server_data: dict = await self.download(session, self.name)     # Целевые данные с сервера для проверки
 
             # Загрузка истории по каждому board
             if boards is not None:
                 for board in boards.get("boards"):
-                    today = datetime.datetime.today()
-                    today = today - datetime.timedelta(1)
-                    today_str = datetime.datetime.strftime(today, "%Y-%m-%d")
-                    count = 0  # Счетчик пропусков (неторговых дней)
-                    valid_board = True  # Наличие у dataset столбца "volume"
+                    # Дата торгов
+                    today: datetime = datetime.datetime.today()
+                    today: datetime = today - datetime.timedelta(1)
+                    today_str: str = datetime.datetime.strftime(today, "%Y-%m-%d")
+
+                    count: int = 0              # Счетчик пропусков (неторговых дней)
+                    valid_board: bool = True    # Наличие у dataset столбца "volume"
 
                     # Продолжает работу только если есть "volume" в данном boards. Иначе - пропускаем итерацию
                     if valid_board:
@@ -30,7 +33,8 @@ class History(Main):
                             if valid_board is False:
                                 break
 
-                            url = self.get_history(
+                            # URL откуда парсим данные
+                            url: str = self.get_history(
                                 board.get("engine_name"),
                                 board.get("market_name"),
                                 board.get("board_id"), today_str)
@@ -39,26 +43,26 @@ class History(Main):
                                 async with session.get(url) as resp:
                                     logging.debug("GET from {}, status {}".format(url, resp.status))
 
-                                    security = await resp.json()  # Данные с биржи
+                                    security: dict = await resp.json()  # Данные с биржи
 
                                     # Если неторговый день: записывааем день в счетчик и пропускаем итерацию. Иначе -
                                     # обнуляем счетчик и работаем дальше
                                     if len(security.get("history").get("data")) == 0:
                                         count += 1
-                                        today = today - datetime.timedelta(1)
-                                        today_str = datetime.datetime.strftime(today, "%Y-%m-%d")
+                                        today: datetime = today - datetime.timedelta(1)
+                                        today_str: str = datetime.datetime.strftime(today, "%Y-%m-%d")
                                         continue
                                     else:
-                                        today = today - datetime.timedelta(1)
-                                        today_str = datetime.datetime.strftime(today, "%Y-%m-%d")
-                                        count = 0
+                                        today: datetime = today - datetime.timedelta(1)
+                                        today_str: str = datetime.datetime.strftime(today, "%Y-%m-%d")
+                                        count: int = 0
 
                                     for data in security.get("history").get("data"):
                                         # Объединение массивов (столбцов и данных) в словарь
-                                        new_data = dict(zip(security.get("history").get("columns"), data))
+                                        new_data: dict = dict(zip(security.get("history").get("columns"), data))
 
                                         # Проще создать новый словарь, чем изменить исходный
-                                        new_new_data = {}
+                                        new_new_data: dict = {}
 
                                         # Переименование ключей
                                         if new_data.get("BOARDID") is not None:
@@ -81,7 +85,7 @@ class History(Main):
                                             new_new_data["volume"] = new_data.pop("VOLUME")
                                         # Прерываем итерацию если нет "volume"
                                         else:
-                                            valid_board = False
+                                            valid_board: bool = False
                                             break
 
                                         # Здась нет id у исходного dataset. Удалять нечего.
