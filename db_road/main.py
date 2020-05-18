@@ -77,18 +77,9 @@ class Main:
                                                                                                                 board,
                                                                                                                 date)
 
-    async def post(self, session, server_data, name, data):
-        """
-        Проверка на совпадение и загрузка в БД
-
-        :param session: Сессия
-        :param server_data: Данные с сервера
-        :param name: Название таблицы
-        :param data: Загружаемые данные
-        """
-
-        url: str = self.dataset_server.get(name)    # URL куда загружаем данные
-        coincidence: bool = False                   # Совпадение
+    @staticmethod
+    def coincidences(server_data, name, data):
+        coincidence: bool = False  # Совпадение
 
         # Сравнение с серверными данными
         if len(server_data[name]) > 0:
@@ -99,8 +90,22 @@ class Main:
                     coincidence: bool = True
                     break
 
+        return coincidence
+
+    async def post(self, session, server_data, name, data):
+        """
+        Проверка на совпадение и загрузка в БД
+
+        :param session: Сессия
+        :param server_data: Данные с сервера
+        :param name: Название таблицы
+        :param data: Загружаемые данные
+        """
+
+        url: str = self.dataset_server.get(name)  # URL куда загружаем данные
+
         # Если совпадение не найдено: POST на сервер
-        if coincidence is False:
+        if self.coincidences(server_data, name, data) is False:
             try:
                 async with session.post(url=url, data=json.dumps(data)) as resp:
                     logging.debug("POST to {}, status {}".format(url, resp.status))
