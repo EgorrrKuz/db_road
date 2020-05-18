@@ -8,6 +8,16 @@ class Markets(Main):
         super().__init__()
         self.name: str = "markets"
 
+    def conversion(self, engine, markets, data):
+        # Объединение массивов (столбцов и данных) в словарь
+        new_data: dict = dict(zip(markets.get(self.name).get("columns"), data))
+
+        # Переименование ключей
+        new_data["name"] = new_data.pop("NAME")
+        new_data["engine_name"] = engine.get("name")
+
+        new_data.pop("id")  # Удаление столбца id
+
     async def start(self, session):
         while True:
             engines: dict = await self.download(session, "engines")  # Данные с сервера ("engines")
@@ -28,16 +38,7 @@ class Markets(Main):
 
                             # Перебор массива данных и преобразование
                             for data in markets.get(self.name).get("data"):
-                                # Объединение массивов (столбцов и данных) в словарь
-                                new_data: dict = dict(zip(markets.get(self.name).get("columns"), data))
-
-                                # Переименование ключей
-                                new_data["name"] = new_data.pop("NAME")
-                                new_data["engine_name"] = engine.get("name")
-
-                                new_data.pop("id")  # Удаление столбца id
-
                                 # Проверка на совпадение и загрузка в БД
-                                await self.post(session, server_data, self.name, new_data)
+                                await self.post(session, server_data, self.name, self.conversion(engine, markets, data))
                     except aiohttp.ClientConnectorError:
                         logging.error("Cannot connect to host {}".format(url))
