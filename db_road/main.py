@@ -79,18 +79,17 @@ class Main:
 
     @staticmethod
     def coincidences(server_data, name, data):
-        coincidence: bool = False  # Совпадение
-
         # Сравнение с серверными данными
-        if len(server_data[name]) > 0:
+        if len(server_data[name]) > 0 and data is not None:
             for _data in server_data[name]:
                 if _data.get('id') is not None:
                     _data.pop('id')
                 if data == _data:
-                    coincidence: bool = True
-                    break
+                    return True
+        else:
+            return True
 
-        return coincidence
+        return False
 
     async def post(self, session, server_data, name, data):
         """
@@ -129,5 +128,20 @@ class Main:
                 logging.debug("GET from {}, status {}".format(url, resp.status))
 
                 return await resp.json()
+        except aiohttp.ClientConnectorError:
+            logging.error("Cannot connect to host {}".format(url))
+
+    async def plunk(self, session, url, name, sub_source, server_data, new_data):
+        try:
+            # Загрузка данных с биржи
+            async with session.get(url) as resp:
+                logging.debug("GET from {}, status {}".format(url, resp.status))
+
+                source: dict = await resp.json()  # Данные с биржи
+
+                # Перебор массива данных и преобразование
+                for data in source.get(name).get("data"):
+                    # Проверка на совпадение и загрузка в БД
+                    await self.post(session, server_data, name, new_data(sub_source, source, data))
         except aiohttp.ClientConnectorError:
             logging.error("Cannot connect to host {}".format(url))
