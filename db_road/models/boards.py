@@ -1,9 +1,7 @@
-from db_road.main import Main
-import aiohttp
-import logging
+from db_road.rest import REST
 
 
-class Boards(Main):
+class Boards(REST):
     def __init__(self):
         super().__init__()
         self.name: str = "boards"  # Название таблицы
@@ -30,8 +28,8 @@ class Boards(Main):
 
     async def start(self, session):
         while True:
-            sub_sources: dict = await self.download(session, "markets")  # Данные с сервера ("markets")
-            server_data: dict = await self.download(session, self.name)  # Целевые данные с сервера для проверки
+            sub_sources: dict = await self.get(session, "markets")  # Данные с сервера ("markets")
+            server_data: dict = await self.get(session, self.name)  # Целевые данные с сервера для проверки
 
             if sub_sources is not None:
                 # Загрузка board по каждому market

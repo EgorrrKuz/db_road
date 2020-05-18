@@ -1,16 +1,16 @@
-from db_road.main import Main
 import aiohttp
 import logging
+from db_road.rest import REST
 
 
-class Engines(Main):
+class Engines(REST):
     def __init__(self):
         super().__init__()
         self.name: str = "engines"  # Название таблицы
 
     async def start(self, session):
         while True:
-            server_data: dict = await self.download(session, self.name)     # Целевые данные с сервера для проверки
+            server_data: dict = await self.get(session, self.name)          # Целевые данные с сервера для проверки
             url: str = self.get_engines()                                   # URL откуда парсим данные
 
             if server_data is not None:

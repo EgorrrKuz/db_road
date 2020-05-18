@@ -1,10 +1,10 @@
-import datetime
-from db_road.main import Main
 import aiohttp
 import logging
+import datetime
+from db_road.rest import REST
 
 
-class History(Main):
+class History(REST):
     def __init__(self):
         super().__init__()
         self.name: str = "securities_moex"  # Название таблицы
@@ -42,8 +42,8 @@ class History(Main):
 
     async def start(self, session):
         while True:
-            boards: dict = await self.download(session, "boards")           # Данные с сервера ("boards")
-            server_data: dict = await self.download(session, self.name)     # Целевые данные с сервера для проверки
+            boards: dict = await self.get(session, "boards")           # Данные с сервера ("boards")
+            server_data: dict = await self.get(session, self.name)     # Целевые данные с сервера для проверки
 
             # Загрузка истории по каждому board
             if boards is not None:

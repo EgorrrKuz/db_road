@@ -1,9 +1,7 @@
-from db_road.main import Main
-import aiohttp
-import logging
+from db_road.rest import REST
 
 
-class Markets(Main):
+class Markets(REST):
     def __init__(self):
         super().__init__()
         self.name: str = "markets"
@@ -22,8 +20,8 @@ class Markets(Main):
 
     async def start(self, session):
         while True:
-            sub_sources: dict = await self.download(session, "engines")  # Данные с сервера ("engines")
-            server_data: dict = await self.download(session, self.name)  # Целевые данные с сервера для проверки
+            sub_sources: dict = await self.get(session, "engines")  # Данные с сервера ("engines")
+            server_data: dict = await self.get(session, self.name)  # Целевые данные с сервера для проверки
 
             # Загрузка market по каждому engine
             if sub_sources is not None:
