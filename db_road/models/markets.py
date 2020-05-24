@@ -28,6 +28,6 @@ class Markets(REST):
             if sub_sources is not None:
                 for sub_source in sub_sources.get("engines"):
                     # URL откуда парсим данные
-                    url: str = self.get_markets(sub_source.get("name"))
+                    url: str = self.get_markets(sub_source.get("name", ))
 
                     await self.plunk(session, url, self.name, sub_source, server_data, self.conversion)

@@ -45,6 +45,6 @@ class Boards(REST):
                 # Загрузка source по каждому sub_source
                 for sub_source in sub_sources.get("markets"):
                     # URL откуда парсим данные
-                    url: str = self.get_boards(sub_source.get("engine_name"), sub_source.get("name"))
+                    url: str = self.get_boards(sub_source.get("engine_name", ), sub_source.get("name", ))
 
                     await self.plunk(session, url, self.name, sub_source, server_data, self.conversion)

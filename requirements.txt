@@ -1,3 +1,4 @@
-aiohttp
+aiohttp~=3.6.2
 async-timeout
 pytest-aiohttp
+pytest~=5.4.2

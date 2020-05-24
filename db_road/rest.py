@@ -7,15 +7,18 @@ from db_road.main import Main
 class REST(Main):
     @staticmethod
     def coincidences(server_data: dict, data: dict, name: str):
+        coincidence = False
+
         # Сравнение с серверными данными
         if data is not None:
             for _data in server_data.get(name):
-                if _data.get('id') is not None:
+                if _data.get('id', ) is not None:
                     _data.pop('id')
 
-                return data == _data
-        else:
-            return True
+                if data == _data:
+                    coincidence = True
+
+        return coincidence
 
     async def post(self, session: aiohttp, server_data: dict, data: dict, name: str):
         """
@@ -30,7 +33,7 @@ class REST(Main):
         url: str = self.dataset_server.get(name)  # URL куда загружаем данные
 
         # Если совпадение не найдено: POST на сервер
-        if self.coincidences(server_data, data, name) is False:
+        if data is not None and self.coincidences(server_data, data, name) is False:
             try:
                 async with session.post(url=url, data=json.dumps(data)) as resp:
                     logging.debug("POST to {}, status {}".format(url, resp.status))
@@ -50,7 +53,7 @@ class REST(Main):
 
         # GET с сервера
         try:
-            async with session.get(url) as resp:
+            async with session.get(url, ) as resp:
                 logging.debug("GET from {}, status {}".format(url, resp.status))
 
                 return await resp.json()

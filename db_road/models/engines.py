@@ -15,7 +15,7 @@ class Engines(REST):
 
         return new_data
 
-    async def start(self, session):
+    async def start(self, session: aiohttp):
         while True:
             server_data: dict = await self.get(session, self.name)     # Целевые данные с сервера для проверки
             url: str = self.get_engines()                                   # URL откуда парсим данные
@@ -23,7 +23,7 @@ class Engines(REST):
             if server_data is not None:
                 # Загрузка данных с биржи
                 try:
-                    async with session.get(url) as resp:
+                    async with session.get(url, ) as resp:
                         logging.debug("GET from {}, status {}".format(url, resp.status))
 
                         source: dict = await resp.json()  # Данные с биржи
@@ -31,6 +31,6 @@ class Engines(REST):
                         # Перебор массива данных и преобразование
                         for data in source.get("engines").get("data"):
                             # Проверка на совпадение и загрузка в БД
-                            await self.post(session, server_data, self.name, self.conversion(source, data))
+                            await self.post(session, server_data, self.conversion(source, data), self.name)
                 except aiohttp.ClientConnectorError:
                     logging.error("Cannot connect to host {}".format(url))

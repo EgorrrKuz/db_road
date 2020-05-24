@@ -36,8 +36,8 @@ class Securities(REST):
                 for sub_source in sub_sources.get("boards"):
                     # URL откуда парсим данные
                     url: str = self.get_securities(
-                        sub_source.get("engine_name"),
-                        sub_source.get("market_name"),
-                        sub_source.get("board_id"))
+                        sub_source.get("engine_name", ),
+                        sub_source.get("market_name", ),
+                        sub_source.get("board_id", ))
 
                     await self.plunk(session, url, self.name, sub_source, server_data, self.conversion)
