@@ -8,25 +8,36 @@ class Securities(REST):
         self.name: str = "securities"  # Название таблицы
 
     def conversion(self, sub_source: dict, source: dict, data: dict):
+        """
+        Преобразование объекта в правильный вид для БД
+
+        :param sub_source: Вспомогательный источник
+        :param source: Источник
+        :param data: Загруженные данные
+        :return: Новыей вид объекта
+        """
+
         # Объединение массивов (столбцов и данных) в словарь
         new_data: dict = dict(zip(source.get(self.name).get("columns"), data))
 
         # Проще создать новый словарь, чем изменить исходный
-        new_new_data: dict = {}
+        new_new_data: dict = {"sec_id": new_data.pop("SECID"), "board_id": new_data.pop("BOARDID"),
+                              "market_name": sub_source.get("market_name"),
+                              "engine_name": sub_source.get("engine_name")}
 
         # Переименование ключей
-        if new_data.get("SECID") is not None:
-            new_new_data["sec_id"] = new_data.pop("SECID")
-        if new_data.get("BOARDID") is not None:
-            new_new_data["board_id"] = new_data.pop("BOARDID")
 
         # Добавление информации
-        new_new_data["market_name"] = sub_source.get("market_name")
-        new_new_data["engine_name"] = sub_source.get("engine_name")
 
         return new_new_data
 
     async def start(self, session: aiohttp):
+        """
+        Начать загрузку данных
+
+        :param session: session
+        """
+
         while True:
             sub_sources: dict = await self.get(session, "boards")  # Данные с сервера ("boards")
             server_data: dict = await self.get(session, self.name)  # Целевые данные с сервера для проверки

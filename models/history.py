@@ -13,6 +13,14 @@ class History(REST):
         self.valid_board: bool = True
 
     def conversion(self, source: dict, data: dict):
+        """
+        Преобразование объекта в правильный вид для БД
+
+        :param source: Источник
+        :param data: Загруженные данные
+        :return: Новыей вид объекта
+        """
+
         # Объединение массивов (столбцов и данных) в словарь
         new_data: dict = dict(zip(source.get("history").get("columns"), data))
 
@@ -33,6 +41,12 @@ class History(REST):
         return new_new_data
 
     async def start(self, session: aiohttp):
+        """
+        Начать загрузку данных
+
+        :param session: session
+        """
+
         while True:
             sub_sources: dict = await self.get(session, "boards")  # Данные с сервера ("boards")
             server_data: dict = await self.get(session, self.name)  # Целевые данные с сервера для проверки

@@ -9,6 +9,14 @@ class Engines(REST):
         self.name: str = "engines"  # Название таблицы
 
     def conversion(self, source: dict, data: dict):
+        """
+        Преобразование объекта в правильный вид для БД
+
+        :param source: Источник
+        :param data: Загруженные данные
+        :return: Новыей вид объекта
+        """
+
         # Объединение массивов (столбцов и данных) в словарь
         new_data: dict = dict(zip(source.get(self.name).get("columns"), data))
         new_data.pop("id")  # Удаление столбца id
@@ -16,6 +24,12 @@ class Engines(REST):
         return new_data
 
     async def start(self, session: aiohttp):
+        """
+        Начать загрузку данных
+
+        :param session: session
+        """
+
         while True:
             server_data: dict = await self.get(session, self.name)     # Целевые данные с сервера для проверки
             url: str = self.get_engines()                                   # URL откуда парсим данные
