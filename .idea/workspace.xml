@@ -2,22 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="b1930060-c5fe-4e81-a14c-25d6d9122c0d" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/db_road.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/db_road/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/db_road/app.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/db_road/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/db_road/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/db_road/models/boards.py" beforeDir="false" afterPath="$PROJECT_DIR$/db_road/models/boards.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/db_road/models/engines.py" beforeDir="false" afterPath="$PROJECT_DIR$/db_road/models/engines.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/db_road/models/history.py" beforeDir="false" afterPath="$PROJECT_DIR$/db_road/models/history.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/db_road/models/markets.py" beforeDir="false" afterPath="$PROJECT_DIR$/db_road/models/markets.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/db_road/models/securities.py" beforeDir="false" afterPath="$PROJECT_DIR$/db_road/models/securities.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/db_road/rest.py" beforeDir="false" afterPath="$PROJECT_DIR$/db_road/rest.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -253,7 +238,7 @@
       <workItem from="1590330171662" duration="10398000" />
       <workItem from="1590508249780" duration="2570000" />
       <workItem from="1590576166507" duration="599000" />
-      <workItem from="1590591056008" duration="2890000" />
+      <workItem from="1590591056008" duration="3108000" />
     </task>
     <servers />
   </component>

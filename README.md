@@ -9,13 +9,13 @@ The necessary methods for working with REST are created in the [`rest`](https://
 
 ## Connection setup
 Connection setup is carried out in the [`main`](https://github.com/EgorrrKuz/db_road/blob/master/db_road/rest.py) file:
-```python
-server_url = "rest_url"  # URL to connect to the REST API
-server_port = "8080"     # Pot on which REST API works
+```python3
+server_url: str = "rest_url"  # URL to connect to the REST API
+server_port: str = "8080"     # Pot on which REST API works
 ```
 
 The URL for loading data is indicated in the dictionary (also in [`main`](https://github.com/EgorrrKuz/db_road/blob/master/db_road/main.py))
-```python
+```python3
 self.dataset_server: dict = {
             "engines": "http://" + self.server_url + ":" + self.server_port + "/engines",
             "markets": "http://" + self.server_url + ":" + self.server_port + "/markets",
@@ -27,7 +27,7 @@ self.dataset_server: dict = {
 
 Connection to the target server is also configured in the [`main`](https://github.com/EgorrrKuz/db_road/blob/master/db_road/main.py)
  in functions:
- ```python
+ ```python3
 def get_engines():
     """
     Get dataset "engines"
