@@ -11,7 +11,7 @@ from db_road.models.securities import Securities
 class App:
     def __init__(self):
         """
-        Инициализация всех экземпляров класса
+        Initializing all instances of a class
         """
 
         self.boards: Boards = Boards()
@@ -22,18 +22,18 @@ class App:
 
     async def main(self):
         """
-        Создаем 1 сессию для всех классов
+        Create 1 session for all classes
         """
 
         async with aiohttp.ClientSession() as session:
-            # Разделяем задачи на потоки
+            # Divide tasks into threads
             engines_t: asyncio = asyncio.create_task(self.engines.start(session))
             markets_t: asyncio = asyncio.create_task(self.markets.start(session))
             boards_t: asyncio = asyncio.create_task(self.boards.start(session))
             securities_t: asyncio = asyncio.create_task(self.securities.start(session))
             history_t: asyncio = asyncio.create_task(self.history.start(session))
 
-            # Запуск задач
+            # Task launch
             await engines_t
             await markets_t
             await boards_t

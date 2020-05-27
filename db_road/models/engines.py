@@ -6,45 +6,45 @@ from db_road.rest import REST
 class Engines(REST):
     def __init__(self):
         super().__init__()
-        self.name: str = "engines"  # Название таблицы
+        self.name: str = "engines"  # Table name
 
     def conversion(self, source: dict, data: dict):
         """
-        Преобразование объекта в правильный вид для БД
+        Converting an object to the correct view for the DB
 
-        :param source: Источник
-        :param data: Загруженные данные
-        :return: Новыей вид объекта
+        :param source: Source data
+        :param data: Uploaded data
+        :return: New view of the object
         """
 
-        # Объединение массивов (столбцов и данных) в словарь
+        # Combining arrays (columns and data) into a dictionary
         new_data: dict = dict(zip(source.get(self.name).get("columns"), data))
-        new_data.pop("id")  # Удаление столбца id
+        new_data.pop("id")  # Delete id column
 
         return new_data
 
     async def start(self, session: aiohttp):
         """
-        Начать загрузку данных
+        Start data loading
 
-        :param session: session
+        :param session: Session
         """
 
         while True:
-            server_data: dict = await self.get(session, self.name)     # Целевые данные с сервера для проверки
-            url: str = self.get_engines()                                   # URL откуда парсим данные
+            server_data: dict = await self.get(session, self.name)     # Target data from the server for verification
+            url: str = self.get_engines()                              # URL from where we parse data
 
             if server_data is not None:
-                # Загрузка данных с биржи
+                # Download data from the exchange
                 try:
                     async with session.get(url, ) as resp:
                         logging.debug("GET from {}, status {}".format(url, resp.status))
 
-                        source: dict = await resp.json()  # Данные с биржи
+                        source: dict = await resp.json()  # Exchange data
 
-                        # Перебор массива данных и преобразование
+                        # Enumeration and POST data
                         for data in source.get("engines").get("data"):
-                            # Проверка на совпадение и загрузка в БД
+                            # Matching and loading into the DB
                             await self.post(session, server_data, self.conversion(source, data), self.name)
                 except aiohttp.ClientConnectorError:
                     logging.error("Cannot connect to host {}".format(url))

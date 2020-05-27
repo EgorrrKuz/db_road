@@ -5,32 +5,32 @@ from db_road.rest import REST
 class Boards(REST):
     def __init__(self):
         super().__init__()
-        self.name: str = "boards"  # Название таблицы
+        self.name: str = "boards"  # Table name
 
     def conversion(self, sub_source: dict, source: dict, data: dict):
         """
-        Преобразование объекта в правильный вид для БД
+        Converting an object to the correct view for the DB
 
-        :param sub_source: Вспомогательный источник
-        :param source: Источник
-        :param data: Загруженные данные
-        :return: Новыей вид объекта
+        :param sub_source: Sub source
+        :param source: Source data
+        :param data: Uploaded data
+        :return: New view of the object
         """
 
-        # Объединение массивов (столбцов и данных) в словарь
+        # Combining arrays (columns and data) into a dictionary
         new_data: dict = dict(zip(source.get(self.name).get("columns"), data))
 
-        # Выбор только торгвых(is_traded) площадок (boards)
+        # Selection of only trading (is_traded) platforms (boards)
         if new_data.get("is_traded") == 1:
-            # Переименование ключей
-            new_data["board_id"] = new_data.pop("boardid")
+            # Rename keys
+            new_data["board_id"]: dict = new_data.pop("boardid")
 
-            # Добавление информации
-            new_data["engine_name"] = sub_source.get("engine_name")
-            new_data["market_name"] = sub_source.get("name")
+            # Adding Information
+            new_data["engine_name"]: dict = sub_source.get("engine_name")
+            new_data["market_name"]: dict = sub_source.get("name")
             new_data.pop("is_traded")
 
-            new_data.pop("id")  # Удаление столбца id
+            new_data.pop("id")  # Delete id column
 
             return new_data
 
@@ -38,19 +38,20 @@ class Boards(REST):
 
     async def start(self, session: aiohttp):
         """
-        Начать загрузку данных
+        Start data loading
 
-        :param session: session
+        :param session: Session
         """
 
         while True:
-            sub_sources: dict = await self.get(session, "markets")  # Данные с сервера ("markets")
-            server_data: dict = await self.get(session, self.name)  # Целевые данные с сервера для проверки
+            sub_sources: dict = await self.get(session, "markets")  # Data from the server ("markets")
+            server_data: dict = await self.get(session, self.name)  # Target data from the server for verification
 
             if sub_sources is not None:
-                # Загрузка source по каждому sub_source
+                # Download "boards" for each "markets"
                 for sub_source in sub_sources.get("markets"):
-                    # URL откуда парсим данные
-                    url: str = self.get_boards(sub_source.get("engine_name", ), sub_source.get("name", ))
+                    # URL from where we parse data
+                    url: str = self.get_boards(sub_source.get("engine_name"), sub_source.get("name", ))
 
+                    # Enumeration and POST data
                     await self.plunk(session, url, self.name, sub_source, server_data, self.conversion)

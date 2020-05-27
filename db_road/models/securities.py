@@ -9,46 +9,43 @@ class Securities(REST):
 
     def conversion(self, sub_source: dict, source: dict, data: dict):
         """
-        Преобразование объекта в правильный вид для БД
+        Converting an object to the correct view for the DB
 
-        :param sub_source: Вспомогательный источник
-        :param source: Источник
-        :param data: Загруженные данные
-        :return: Новыей вид объекта
+        :param sub_source: Sub source
+        :param source: Source data
+        :param data: Uploaded data
+        :return: New view of the object
         """
 
-        # Объединение массивов (столбцов и данных) в словарь
+        # Combining arrays (columns and data) into a dictionary
         new_data: dict = dict(zip(source.get(self.name).get("columns"), data))
 
-        # Проще создать новый словарь, чем изменить исходный
+        # It’s easier to create a new dictionary than to change the original
         new_new_data: dict = {"sec_id": new_data.pop("SECID"), "board_id": new_data.pop("BOARDID"),
                               "market_name": sub_source.get("market_name"),
                               "engine_name": sub_source.get("engine_name")}
-
-        # Переименование ключей
-
-        # Добавление информации
 
         return new_new_data
 
     async def start(self, session: aiohttp):
         """
-        Начать загрузку данных
+        Start data loading
 
-        :param session: session
+        :param session: Session
         """
 
         while True:
-            sub_sources: dict = await self.get(session, "boards")  # Данные с сервера ("boards")
-            server_data: dict = await self.get(session, self.name)  # Целевые данные с сервера для проверки
+            sub_sources: dict = await self.get(session, "boards")   # Data from the server ("boards")
+            server_data: dict = await self.get(session, self.name)  # Target data from the server for verification
 
-            # Загрузка securities по каждому board
+            # Download "securities" for each "boards"
             if sub_sources is not None:
                 for sub_source in sub_sources.get("boards"):
-                    # URL откуда парсим данные
+                    # URL from where we parse data
                     url: str = self.get_securities(
                         sub_source.get("engine_name", ),
                         sub_source.get("market_name", ),
                         sub_source.get("board_id", ))
 
+                    # Enumeration and POST data
                     await self.plunk(session, url, self.name, sub_source, server_data, self.conversion)

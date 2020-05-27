@@ -7,32 +7,41 @@ from db_road.main import Main
 class REST(Main):
     @staticmethod
     def coincidences(server_data: dict, data: dict, name: str):
-        coincidence = False
+        """
+        Find matches in dataset
 
-        # Сравнение с серверными данными
+        :param server_data: Data from the server
+        :param data: New data
+        :param name: Dataset name
+        :return: Coincidence
+        """
+
+        coincidence: bool = False
+
+        # Comparison with server data
         if data is not None:
             for _data in server_data.get(name):
-                if _data.get('id', ) is not None:
-                    _data.pop('id')
+                if _data.get("id", ) is not None:
+                    _data.pop("id")
 
                 if data == _data:
-                    coincidence = True
+                    coincidence: bool = True
 
         return coincidence
 
     async def post(self, session: aiohttp, server_data: dict, data: dict, name: str):
         """
-        Проверка на совпадение и загрузка в БД
+        Matching and loading into the database
 
-        :param session: Сессия
-        :param server_data: Данные с сервера
-        :param name: Название таблицы
-        :param data: Загружаемые данные
+        :param session: Session
+        :param server_data: Data from the server
+        :param name: Dataset name
+        :param data: Downloadable data
         """
 
-        url: str = self.dataset_server.get(name)  # URL куда загружаем данные
+        url: str = self.dataset_server.get(name)  # URL where we load data
 
-        # Если совпадение не найдено: POST на сервер
+        # If no match is found: POST to server
         if data is not None and self.coincidences(server_data, data, name) is False:
             try:
                 async with session.post(url=url, data=json.dumps(data)) as resp:
@@ -42,16 +51,16 @@ class REST(Main):
 
     async def get(self, session: aiohttp, name: str):
         """
-        Загрузка данные с сервера
+        Download data from server
 
-        :param session: Сессия
-        :param name: Название таблицы
-        :return: Данные с сервера (JSON)
+        :param session: Session
+        :param name: Dataset name
+        :return: Data from the server (JSON)
         """
 
-        url: str = self.dataset_server.get(name)  # URL откуда парсим данные
+        url: str = self.dataset_server.get(name)  # URL from where we parse data
 
-        # GET с сервера
+        # GET from the server
         try:
             async with session.get(url, ) as resp:
                 logging.debug("GET from {}, status {}".format(url, resp.status))
@@ -63,15 +72,15 @@ class REST(Main):
     async def plunk(self, session: aiohttp, url: str, name: str, sub_source: dict, server_data: dict,
                     new_data: classmethod):
         try:
-            # Загрузка данных с биржи
+            # Download data from the exchange
             async with session.get(url) as resp:
                 logging.debug("GET from {}, status {}".format(url, resp.status))
 
-                source: dict = await resp.json()  # Данные с биржи
+                source: dict = await resp.json()  # Exchange data
 
-                # Перебор массива данных и преобразование
+                # Dataset enumeration and conversion
                 for data in source.get(name).get("data"):
-                    # Проверка на совпадение и загрузка в БД
+                    # Matching and loading into the database
                     await self.post(session, server_data, new_data(sub_source, source, data),  name)
         except aiohttp.ClientConnectorError:
             logging.error("Cannot connect to host {}".format(url))
