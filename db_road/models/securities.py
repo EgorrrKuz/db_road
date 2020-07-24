@@ -1,5 +1,5 @@
 import aiohttp
-from db_road.rest import REST
+from rest import REST
 
 
 class Securities(REST):
@@ -21,9 +21,9 @@ class Securities(REST):
         new_data: dict = dict(zip(source.get(self.name).get("columns"), data))
 
         # It’s easier to create a new dictionary than to change the original
-        new_new_data: dict = {"sec_id": new_data.pop("SECID"), "board_id": new_data.pop("BOARDID"),
-                              "market_name": sub_source.get("market_name"),
-                              "engine_name": sub_source.get("engine_name")}
+        new_new_data: dict = {"secId": new_data.pop("SECID"), "shortName": new_data.pop("SHORTNAME"),
+                              "boardId": new_data.pop("BOARDID"), "marketName": sub_source.get("marketName"),
+                              "engineName": sub_source.get("engineName")}
 
         return new_new_data
 
@@ -40,12 +40,12 @@ class Securities(REST):
 
             # Download "securities" for each "boards"
             if sub_sources is not None:
-                for sub_source in sub_sources.get("boards"):
+                for sub_source in sub_sources:
                     # URL from where we parse data
                     url: str = self.get_securities(
-                        sub_source.get("engine_name", ),
-                        sub_source.get("market_name", ),
-                        sub_source.get("board_id", ))
+                        sub_source.get("engineName"),
+                        sub_source.get("marketName"),
+                        sub_source.get("boardId"))
 
                     # Enumeration and POST data
                     await self.plunk(session, url, self.name, sub_source, server_data, self.conversion)

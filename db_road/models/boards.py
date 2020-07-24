@@ -1,5 +1,5 @@
 import aiohttp
-from db_road.rest import REST
+from rest import REST
 
 
 class Boards(REST):
@@ -23,11 +23,12 @@ class Boards(REST):
         # Selection of only trading (is_traded) platforms (boards)
         if new_data.get("is_traded") == 1:
             # Rename keys
-            new_data["board_id"]: dict = new_data.pop("boardid")
+            new_data["boardGroupId"]: dict = new_data.pop("board_group_id")
+            new_data["boardId"]: dict = new_data.pop("boardid")
 
             # Adding Information
-            new_data["engine_name"]: dict = sub_source.get("engine_name")
-            new_data["market_name"]: dict = sub_source.get("name")
+            new_data["engineName"]: dict = sub_source.get("engineName")
+            new_data["marketName"]: dict = sub_source.get("name")
             new_data.pop("is_traded")
 
             new_data.pop("id")  # Delete id column
@@ -49,9 +50,9 @@ class Boards(REST):
 
             if sub_sources is not None:
                 # Download "boards" for each "markets"
-                for sub_source in sub_sources.get("markets"):
+                for sub_source in sub_sources:
                     # URL from where we parse data
-                    url: str = self.get_boards(sub_source.get("engine_name"), sub_source.get("name", ))
+                    url: str = self.get_boards(sub_source.get("engineName"), sub_source.get("name"))
 
                     # Enumeration and POST data
                     await self.plunk(session, url, self.name, sub_source, server_data, self.conversion)

@@ -1,6 +1,8 @@
+import asyncio
+
 import aiohttp
 import logging
-from db_road.rest import REST
+from rest import REST
 
 
 class Engines(REST):
@@ -37,7 +39,7 @@ class Engines(REST):
             if server_data is not None:
                 # Download data from the exchange
                 try:
-                    async with session.get(url, ) as resp:
+                    async with session.get(url) as resp:
                         logging.debug("GET from {}, status {}".format(url, resp.status))
 
                         source: dict = await resp.json()  # Exchange data
@@ -48,3 +50,5 @@ class Engines(REST):
                             await self.post(session, server_data, self.conversion(source, data), self.name)
                 except aiohttp.ClientConnectorError:
                     logging.error("Cannot connect to host {}".format(url))
+                except asyncio.exceptions.TimeoutError:
+                    logging.error("TimeoutError on {}".format(url))

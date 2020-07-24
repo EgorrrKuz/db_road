@@ -1,16 +1,16 @@
 class Main:
     def __init__(self):
-        self.server_url: str = "localhost"  # To run on the local server
+        self.server_url: str = "rest"  # To run on the local server
         # server_url: str = "rest"          # To run in a docker container
-        self.server_port: str = "8080"      # Port running REST API
+        self.server_port: str = "80"      # Port running REST API
 
         # Links for parsing data from the server
         self.dataset_server: dict = {
-            "engines": "http://" + self.server_url + ":" + self.server_port + "/engines",
-            "markets": "http://" + self.server_url + ":" + self.server_port + "/markets",
-            "boards": "http://" + self.server_url + ":" + self.server_port + "/boards",
-            "securities": "http://" + self.server_url + ":" + self.server_port + "/securities",
-            "securities_moex": "http://" + self.server_url + ":" + self.server_port + "/securities_moex"
+            "engines": "http://" + self.server_url + ":" + self.server_port + "/api/engines",
+            "markets": "http://" + self.server_url + ":" + self.server_port + "/api/markets",
+            "boards": "http://" + self.server_url + ":" + self.server_port + "/api/boards",
+            "securities": "http://" + self.server_url + ":" + self.server_port + "/api/securities",
+            "history": "http://" + self.server_url + ":" + self.server_port + "/api/history"
         }
 
     # Methods for obtaining data from the exchange

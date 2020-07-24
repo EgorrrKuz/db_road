@@ -1,7 +1,8 @@
+import asyncio
 import json
 import logging
 import aiohttp
-from db_road.main import Main
+from main import Main
 
 
 class REST(Main):
@@ -20,7 +21,7 @@ class REST(Main):
 
         # Comparison with server data
         if data is not None:
-            for _data in server_data.get(name):
+            for _data in server_data:
                 if _data.get("id", ) is not None:
                     _data.pop("id")
 
@@ -44,7 +45,7 @@ class REST(Main):
         # If no match is found: POST to server
         if data is not None and self.coincidences(server_data, data, name) is False:
             try:
-                async with session.post(url=url, data=json.dumps(data)) as resp:
+                async with session.post(url=url, json=data) as resp:
                     logging.debug("POST to {}, status {}".format(url, resp.status))
             except aiohttp.ClientConnectorError:
                 logging.error("Cannot connect to host {}".format(url))
@@ -62,12 +63,14 @@ class REST(Main):
 
         # GET from the server
         try:
-            async with session.get(url, ) as resp:
+            async with session.get(url) as resp:
                 logging.debug("GET from {}, status {}".format(url, resp.status))
 
                 return await resp.json()
         except aiohttp.ClientConnectorError:
             logging.error("Cannot connect to host {}".format(url))
+        except asyncio.exceptions.TimeoutError:
+            logging.error("TimeoutError on {}".format(url))
 
     async def plunk(self, session: aiohttp, url: str, name: str, sub_source: dict, server_data: dict,
                     new_data: classmethod):
@@ -84,3 +87,5 @@ class REST(Main):
                     await self.post(session, server_data, new_data(sub_source, source, data),  name)
         except aiohttp.ClientConnectorError:
             logging.error("Cannot connect to host {}".format(url))
+        except asyncio.exceptions.TimeoutError:
+            logging.error("TimeoutError on {}".format(url))

@@ -1,5 +1,5 @@
 import aiohttp
-from db_road.rest import REST
+from rest import REST
 
 
 class Markets(REST):
@@ -22,7 +22,7 @@ class Markets(REST):
 
         # Rename keys
         new_data["name"] = new_data.pop("NAME")
-        new_data["engine_name"] = sub_source.get("name")
+        new_data["engineName"] = sub_source.get("name")
 
         new_data.pop("id")  # Delete "id" column
 
@@ -41,9 +41,9 @@ class Markets(REST):
 
             # Download "market" for each "engine"
             if sub_sources is not None:
-                for sub_source in sub_sources.get("engines"):
+                for sub_source in sub_sources:
                     # URL from where we parse data
-                    url: str = self.get_markets(sub_source.get("name", ))
+                    url: str = self.get_markets(sub_source.get("name"))
 
                     # Enumeration and POST data
                     await self.plunk(session, url, self.name, sub_source, server_data, self.conversion)

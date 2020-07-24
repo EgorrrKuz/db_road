@@ -1,15 +1,16 @@
+import asyncio
 import datetime
 import logging
 
 import aiohttp
 
-from db_road.rest import REST
+from rest import REST
 
 
 class History(REST):
     def __init__(self):
         super().__init__()
-        self.name: str = "securities_moex"  # Table name
+        self.name: str = "history"  # Table name
         self.valid_board: bool = True
 
     def conversion(self, source: dict, data: dict):
@@ -25,8 +26,8 @@ class History(REST):
         new_data: dict = dict(zip(source.get("history").get("columns"), data))
 
         # It’s easier to create a new dictionary than to change the original
-        new_new_data: dict = {"board_id": new_data.pop("BOARDID"), "trade_date": new_data.pop("TRADEDATE"),
-                              "short_name": new_data.pop("SHORTNAME"), "sec_id": new_data.pop("SECID"),
+        new_new_data: dict = {"boardId": new_data.pop("BOARDID"), "tradeDate": new_data.pop("TRADEDATE"),
+                              "shortName": new_data.pop("SHORTNAME"), "secId": new_data.pop("SECID"),
                               "open": new_data.pop("OPEN"), "low": new_data.pop("LOW"), "high": new_data.pop("HIGH"),
                               "close": new_data.pop("CLOSE")}
 
@@ -52,7 +53,7 @@ class History(REST):
             server_data: dict = await self.get(session, self.name)  # Target data from the server for verification
 
             # Download history for each board
-            for sub_source in sub_sources.get("boards"):
+            for sub_source in sub_sources:
                 today: datetime = datetime.datetime.today()
                 today: datetime = today - datetime.timedelta(1)
                 today_str: str = datetime.datetime.strftime(today, "%Y-%m-%d")
@@ -68,9 +69,9 @@ class History(REST):
                         if self.valid_board is False:
                             break
 
-                        url: str = self.get_history(sub_source.get("engine_name"),
-                                                    sub_source.get("market_name"),
-                                                    sub_source.get("board_id"), today_str)
+                        url: str = self.get_history(sub_source.get("engineName"),
+                                                    sub_source.get("marketName"),
+                                                    sub_source.get("boardId"), today_str)
 
                         try:
                             async with session.get(url) as resp:
@@ -96,3 +97,5 @@ class History(REST):
                                     await self.post(session, server_data, self.conversion(source, data), self.name)
                         except aiohttp.ClientConnectorError:
                             logging.error("Cannot connect to host {}".format(url))
+                        except asyncio.exceptions.TimeoutError:
+                            logging.error("TimeoutError on {}".format(url))
