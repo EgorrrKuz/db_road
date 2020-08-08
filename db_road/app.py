@@ -26,9 +26,10 @@ class App:
         """
 
         semaphore = asyncio.Semaphore(200)
+        timeout = aiohttp.ClientTimeout(total=5)
 
         async with semaphore:
-            async with aiohttp.ClientSession() as session:
+            async with aiohttp.ClientSession(timeout=timeout) as session:
                 # Divide tasks into threads
                 engines_t: asyncio = asyncio.create_task(self.engines.start(session))
                 markets_t: asyncio = asyncio.create_task(self.markets.start(session))
