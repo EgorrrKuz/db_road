@@ -1,4 +1,2 @@
-aiohttp~=3.6.2
-async-timeout
-pytest-aiohttp
-pytest~=5.4.2
+aiohttp==3.6.2
+async-timeout==3.0.1
